@@ -1,0 +1,247 @@
+﻿<Page
+    x:Class="UWPApp.Views.PicturesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UWPApp.Views"
+    xmlns:vm="using:UWPApp.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:t="using:UWPApp.StateTrigger"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+        
+        <SplitView 
+            x:Name="_splitView"
+            DisplayMode="CompactInline"
+            IsPaneOpen="False" 
+            CompactPaneLength="48" 
+            OpenPaneLength="200">
+
+            <SplitView.Resources>
+                <Style TargetType="RadioButton" x:Key="SplitViewRadioButtonStyle">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Padding" Value="4"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="RadioButton">
+                                <Border BorderThickness="0">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal"/>
+                                            <VisualState x:Name="PointerOver">
+                                                <Storyboard>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="menuGrid">
+                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="#FF5298D4"/>
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="Pressed">
+                                                <Storyboard>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="menuGrid">
+                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="#FF137CD4"/>
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="Disabled" />
+                                        </VisualStateGroup>
+                                        <VisualStateGroup x:Name="CheckStates">
+                                            <VisualState x:Name="Checked">
+                                                <Storyboard>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="menuGrid">
+                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="#FF3789CF"/>
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="Unchecked"/>
+                                            <VisualState x:Name="Indeterminate"/>
+                                        </VisualStateGroup>
+                                        <VisualStateGroup x:Name="FocusStates">
+                                            <VisualState x:Name="Focused"/>
+                                            <VisualState x:Name="Unfocused"/>
+                                            <VisualState x:Name="PointerFocused"/>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    
+                                    <Grid Name="menuGrid" Background="Transparent" VerticalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="48"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock 
+                                            Text="{TemplateBinding Tag}" 
+                                            FontSize="24" 
+                                            Height="28" 
+                                            FontFamily="Segoe MDL2 Assets" 
+                                            Margin="4, 8, 4, 4" 
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Center"/>
+                                        <ContentPresenter 
+                                            Grid.Column="1" 
+                                            Content="{TemplateBinding Content}" 
+                                            ContentTemplate="{TemplateBinding ContentTemplate}" 
+                                            ContentTransitions="{TemplateBinding ContentTransitions}" 
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            Margin="{TemplateBinding Padding}" 
+                                            TextWrapping="Wrap" />
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </SplitView.Resources>
+            
+            <SplitView.Pane>
+                <StackPanel>
+                    <RadioButton 
+                        Style="{StaticResource SplitViewRadioButtonStyle}"
+                        Tag="&#xE700;" 
+                        Click="MenuButton_Click"/>
+                    <RadioButton 
+                        Style="{StaticResource SplitViewRadioButtonStyle}"
+                        Tag="&#xE722;" 
+                        Content="Camera" 
+                        Click="CameraButton_Click"/>
+                </StackPanel>
+            </SplitView.Pane>
+
+            <Grid Name="rootGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock 
+                    Grid.Row="0"
+                    Text="Pictures"
+                    Style="{ThemeResource HeaderTextBlockStyle}"
+                    Margin="20"/>
+
+                <GridView 
+                    Grid.Row="1"
+                    ItemsSource="{Binding Pictures}"
+                    HorizontalAlignment="Center">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <UserControl>
+                                <Border BorderThickness="0">
+                                    <!-- Adaptive Design: Visual states-->
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="VisualStates">
+                                            <VisualState x:Name="SnapPoint0">
+                                                <VisualState.StateTriggers>
+                                                    <!-- Triggers for a windows size greater than 0. -->
+                                                    <AdaptiveTrigger MinWindowWidth="0"/>
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Target="imageThumbnail.Width" Value="80"/>
+                                                    <Setter Target="textBlockName.Width" Value="80"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="SnapPoint320">
+                                                <VisualState.StateTriggers>
+                                                    <!-- Triggers for a windows size greater than 320. -->
+                                                    <AdaptiveTrigger MinWindowWidth="321"/>
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Target="imageThumbnail.Width" Value="160"/>
+                                                    <Setter Target="textBlockName.Width" Value="160"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="SnapPoint720">
+                                                <VisualState.StateTriggers>
+                                                    <!-- Triggers for a windows size greater than 720. -->
+                                                    <AdaptiveTrigger MinWindowWidth="721"/>
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Target="imageThumbnail.Width" Value="300"/>
+                                                    <Setter Target="textBlockName.Width" Value="300"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="SnapPoint1024">
+                                                <VisualState.StateTriggers>
+                                                    <!-- Triggers for a windows size greater than 1024. -->
+                                                    <AdaptiveTrigger MinWindowWidth="1025"/>
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Target="imageThumbnail.Width" Value="400"/>
+                                                    <Setter Target="textBlockName.Width" Value="400"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                        <VisualStateGroup x:Name="DeviceFamilyStates">
+                                            <VisualState x:Name="MobileFamily">
+                                                <!-- Triggers for a Windows.Mobile device. -->
+                                                <VisualState.StateTriggers>
+                                                    <t:DeviceFamilyTrigger Family="Windows.Mobile"/>
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Target="textBlockName.(RelativePanel.Below)" Value="{x:Null}"/>
+                                                    <Setter Target="textBlockName.(RelativePanel.RightOf)" Value="imageThumbnail"/>
+                                                    <Setter Target="textBlockName.(RelativePanel.AlignVerticalCenterWith)" Value="imageThumbnail"/>
+                                                    <Setter Target="textBlockName.Margin" Value="8, 0, 0, 0"/>
+                                                    <Setter Target="textBlockName.Width" Value="160"/>
+                                                    <Setter Target="imageThumbnail.Width" Value="100"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                        <!--<VisualStateGroup x:Name="OrientationStates">
+                                            <VisualState x:Name="Landscape">
+                                                <VisualState.StateTriggers>
+                                                    <t:OrientationStateTrigger Orientation="Landscape"/>
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Target="textBlockName.Foreground" Value="Red"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Portrait">
+                                                <VisualState.StateTriggers>
+                                                    <t:OrientationStateTrigger Orientation="Portrait"/>
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Target="textBlockName.Foreground" Value="Blue"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>-->
+                                    </VisualStateManager.VisualStateGroups>
+                                    
+                                    <!-- Layout control to position child elements relative tp each other. -->
+                                    <RelativePanel 
+                                        x:Name="panel"
+                                        Margin="20">
+                                        <TextBlock 
+                                            Name="textBlockName"
+                                            RelativePanel.Below="imageThumbnail"
+                                            Text="{Binding Name}"
+                                            Style="{ThemeResource BodyTextBlockStyle}"
+                                            Margin="0, 8, 0, 0"
+                                            TextWrapping="NoWrap"/>
+                                        <Image
+                                            Name="imageThumbnail"
+                                            Source="{Binding Thumbnail}"/>
+                                    </RelativePanel>
+                                </Border>
+                            </UserControl>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+
+            </Grid>
+            
+        </SplitView>
+        
+    </Grid>
+    
+</Page>
